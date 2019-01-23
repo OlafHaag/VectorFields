@@ -38,6 +38,15 @@ class VectorField(ABC):
     
     @staticmethod
     def _get_param_as_array(param, absolute=True, dtype=int):
+        """ Checks the input parameter and, if necessary, transforms it
+        to an array of length 3 for x, y, and z values.
+        
+        :param absolute: Change sign to positive only.
+        :param dtype: transform to int or float
+        
+        :rtype: numpy.ndarray
+        :return: ndarray of length 3.
+        """
         arr = (np.ones(3) * 2).astype(dtype)
         if not param:
             return arr
@@ -57,6 +66,7 @@ class VectorField(ABC):
             return arr.astype(dtype)
 
     def _generate_grid(self):
+        """ Generate the grid coordinates on which the functions for u, v, and w will be evaluated. """
         # Center bounding volume.
         min = -self.size * 0.5
         max = self.size * 0.5
@@ -70,7 +80,9 @@ class VectorField(ABC):
 
     @abstractmethod
     def _set_uvw(self):
-        """ set self.u, self.v and self.w. """
+        """ Set functions for u, v, and w (xyz) vector components.
+        Set self.u, self.v and self.w.
+        """
         # Todo: simple example
         self.u = None
         self.v = None
@@ -82,6 +94,7 @@ class VectorField(ABC):
         return vectors
         
     def save_fga(self, filename):
+        """ Export the vector field as .FGA file (Fluid Grid ASCII) format to disk. """
         np.savetxt(filename, self.vectors, delimiter=',', newline=',\n', fmt='%3.5f')
         
         prependix = "{0},{1},{2},\n-{3},-{4},-{5},\n{3},{4},{5},".format(self.resolution[0],
@@ -99,9 +112,12 @@ class VectorField(ABC):
             print("ERROR {}: Failed to save file {}. {}".format(e.errno, filename, e.strerror))
     
     def plot(self, filename=None):
+        """ Plot the vector field as a preview. """
+        # Todo: 3D plots get messy quickly. Any way to use plotly for interactive plots wihout the Jupyter overhead?
         pass
     
     def _plot_save_or_show(self, filename=None):
+        """ Helper method to decide whether to show the plot or save it do file. """
         if not filename:
             plt.show()
         else:
@@ -116,6 +132,7 @@ class VectorField2D(VectorField):
         This is still an abstract base class.
     """
     def __init__(self, size=None, resolution=None):
+        """ Set default resolution and size. """
         if not size:
             size = 4
         if not resolution:
@@ -123,7 +140,7 @@ class VectorField2D(VectorField):
         super(VectorField2D, self).__init__(size, resolution)
         
     def plot(self, filename=None):
-        # plot vector field
+        """ Plot a top-down view on the XY plane of the vector field. """
         plt.figure(figsize=(6, 6))
         plt.quiver(np.squeeze(self.grid_x, axis=2),
                    np.squeeze(self.grid_y, axis=2),
@@ -139,7 +156,7 @@ class VectorField2D(VectorField):
 class Vortex2D(VectorField2D):
     
     def _set_uvw(self):
-        # Calculate vector field.
+        """ Calculate vector field. """
         sq_sum = self.grid_x ** 2 + self.grid_y ** 2
         divisor = np.sqrt(sq_sum)
         factor = np.exp(-sq_sum)
@@ -154,7 +171,7 @@ class Convolution2D(VectorField2D):
         super(Convolution2D, self).__init__(size, resolution)
         
     def _set_uvw(self):
-        # Calculate vector field.
+        """ Calculate vector field. """
         term = np.exp(-(self.grid_x ** 2 + self.grid_y ** 2))
         self.u = -2 * self.grid_x * term
         self.v = -2 * self.grid_y * term
@@ -169,11 +186,12 @@ class ElectricDipole2D(VectorField2D):
             self.normalize()
 
     def _E(self, q, a):
+        """ Calculate electric field. """
         return q * (self.grid_x - a[0]) / ((self.grid_x - a[0]) ** 2 + (self.grid_y - a[1]) ** 2) ** 1.5, \
                q * (self.grid_y - a[1]) / ((self.grid_x - a[0]) ** 2 + (self.grid_y - a[1]) ** 2) ** 1.5
     
     def _set_uvw(self):
-        # Calculate vector field.
+        """ Calculate vector field. """
         u1, v1 = self._E(1, [-1, 0])
         u2, v2 = self._E(-1, [1, 0])
         self.u = u1 + u2
