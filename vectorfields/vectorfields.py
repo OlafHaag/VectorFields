@@ -167,14 +167,14 @@ class ElectricDipole2D(VectorField2D):
         if normalize:
             self.normalize()
 
-    def E(self, q, a):
+    def _E(self, q, a):
         return q * (self.grid_x - a[0]) / ((self.grid_x - a[0]) ** 2 + (self.grid_y - a[1]) ** 2) ** 1.5, \
                q * (self.grid_y - a[1]) / ((self.grid_x - a[0]) ** 2 + (self.grid_y - a[1]) ** 2) ** 1.5
     
     def _set_uvw(self):
         # Calculate vector field.
-        u1, v1 = self.E(1, [-1, 0])
-        u2, v2 = self.E(-1, [1, 0])
+        u1, v1 = self._E(1, [-1, 0])
+        u2, v2 = self._E(-1, [1, 0])
         self.u = u1 + u2
         self.v = v1 + v2
         self.w = np.zeros(self.resolution)
