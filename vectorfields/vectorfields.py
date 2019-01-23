@@ -125,7 +125,11 @@ class VectorField2D(VectorField):
     def plot(self, filename=None):
         # plot vector field
         plt.figure(figsize=(6, 6))
-        plt.quiver(self.grid_x, self.grid_y, self.u, self.v, pivot='middle', headwidth=4, headlength=6)
+        plt.quiver(np.squeeze(self.grid_x, axis=2),
+                   np.squeeze(self.grid_y, axis=2),
+                   np.squeeze(self.u, axis=2),
+                   np.squeeze(self.v, axis=2),
+                   pivot='middle', headwidth=4, headlength=6)
         plt.xlabel('x')
         plt.ylabel('y')
         plt.axis('image')
@@ -134,9 +138,6 @@ class VectorField2D(VectorField):
     
 class Vortex2D(VectorField2D):
     
-    def __init__(self, size=None, resolution=None):
-        super(Vortex2D, self).__init__(size, resolution)
-
     def _set_uvw(self):
         # Calculate vector field.
         sq_sum = self.grid_x ** 2 + self.grid_y ** 2
