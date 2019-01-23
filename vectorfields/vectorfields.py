@@ -34,7 +34,7 @@ class VectorField(ABC):
         self.size = self._get_param_as_array(size)
         self.grid_x, self.grid_y, self.grid_z = self._generate_grid()
         self._set_uvw()
-        self.vectors = self._shape_vectors()
+        self.vectors = self._get_vector_table()
     
     @staticmethod
     def _get_param_as_array(param, absolute=True, dtype=int):
@@ -71,14 +71,14 @@ class VectorField(ABC):
     @abstractmethod
     def _set_uvw(self):
         """ set self.u, self.v and self.w. """
-        # Todo: simplest form example
+        # Todo: simple example
         self.u = None
         self.v = None
         self.w = None
     
-    def _shape_vectors(self):
-        vectors = np.dstack((self.u, self.v, self.w))  # fixME already have 3 dimensions
-        vectors = np.reshape(vectors, (int(vectors.size/3), 3), order='C')
+    def _get_vector_table(self):
+        """ This composes a 3*m matrix of all the row vectors in preparation for FGA export. """
+        vectors = np.vstack((self.u.flat, self.v.flat, self.w.flat)).T
         return vectors
         
     def save_fga(self, filename):
@@ -120,23 +120,8 @@ class VectorField2D(VectorField):
             size = 4
         if not resolution:
             resolution = [32, 32, 1]
-
-        self.resolution = self._get_param_as_array(resolution)
-        self.size = self._get_param_as_array(size)
-        self.grid_x, self.grid_y, _ = self._generate_grid()
-        # Flat z-direction, hence 2D.
-        self.w = np.zeros((self.resolution[0], self.resolution[1]))
-        # Remove third dimension from x,y.
-        self.grid_x = np.squeeze(self.grid_x, axis=2)
-        self.grid_y = np.squeeze(self.grid_y, axis=2)
-        self._set_uvw()
-        self.vectors = self._shape_vectors()
+        super(VectorField2D, self).__init__(size, resolution)
         
-    def _shape_vectors(self):
-        vectors = np.dstack((self.u, self.v, self.w))
-        vectors = np.reshape(vectors, (self.resolution[0] * self.resolution[1], 3), order='C')
-        return vectors
-    
     def plot(self, filename=None):
         # plot vector field
         plt.figure(figsize=(6, 6))
@@ -159,6 +144,7 @@ class Vortex2D(VectorField2D):
         factor = np.exp(-sq_sum)
         self.u = factor * -self.grid_y / divisor
         self.v = factor *  self.grid_x / divisor
+        self.w = np.zeros(self.resolution)
         
 
 class Convolution2D(VectorField2D):
@@ -171,6 +157,7 @@ class Convolution2D(VectorField2D):
         term = np.exp(-(self.grid_x ** 2 + self.grid_y ** 2))
         self.u = -2 * self.grid_x * term
         self.v = -2 * self.grid_y * term
+        self.w = np.zeros(self.resolution)
 
 
 class ElectricDipole2D(VectorField2D):
@@ -190,12 +177,13 @@ class ElectricDipole2D(VectorField2D):
         u2, v2 = self.E(-1, [1, 0])
         self.u = u1 + u2
         self.v = v1 + v2
+        self.w = np.zeros(self.resolution)
     
     def normalize(self):
         """ Normalization loses all information about field strength! """
         self.u = self.u / np.sqrt(self.u ** 2 + self.v ** 2)
         self.v = self.v / np.sqrt(self.u ** 2 + self.v ** 2)
-        self.vectors = self._shape_vectors()
+        self.vectors = self._get_vector_table()
         
     def clamp(self, E_max=10):
         """ Clamp field strength to E_max. """
@@ -203,4 +191,4 @@ class ElectricDipole2D(VectorField2D):
         k = np.where(E.flat[:] > E_max)[0]
         self.u.flat[k] = self.u.flat[k] / E.flat[k] * E_max
         self.v.flat[k] = self.v.flat[k] / E.flat[k] * E_max
-        self.vectors = self._shape_vectors()
+        self.vectors = self._get_vector_table()
