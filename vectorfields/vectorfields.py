@@ -31,7 +31,7 @@ class VectorField(ABC):
     """ Creates a vector field in three dimensional cartesian space. """
     def __init__(self, size=None, resolution=None):
         self.resolution = self._get_param_as_array(resolution)
-        self.size = self._get_param_as_array(size)
+        self.size = self._get_param_as_array(size, dtype=float)
         self.grid_x, self.grid_y, self.grid_z = self._generate_grid()
         self._set_uvw()
         self.vectors = self._get_vector_table()
