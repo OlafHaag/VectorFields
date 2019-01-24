@@ -211,3 +211,19 @@ class ElectricDipole2D(VectorField2D):
         self.u.flat[k] = self.u.flat[k] / E.flat[k] * E_max
         self.v.flat[k] = self.v.flat[k] / E.flat[k] * E_max
         self.vectors = self._get_vector_table()
+
+
+class CustomUV2D(VectorField2D):
+    """ Provide custom functions for creating u and v vector components.
+        These functions must take 2 parameters that will be substituted for grid_x and grid_y.
+    """
+    def __init__(self, u_func, v_func, size=None, resolution=None):
+        self.u_func = u_func
+        self.v_func = v_func
+        super(CustomUV2D, self).__init__(size, resolution)
+        
+    def _set_uvw(self):
+        """ Calculate vector field. """
+        self.u = self.u_func(self.grid_x, self.grid_y)
+        self.v = self.v_func(self.grid_x, self.grid_y)
+        self.w = np.zeros(self.resolution)
