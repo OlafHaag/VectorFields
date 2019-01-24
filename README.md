@@ -8,7 +8,7 @@ You have to know a bit of python and math.
 The abstract base classes VectorField and VectorField2D can't be instantiated.
 
 Instantiate a specific vector field, like ElectricDipole2D. You can use the plot-method to get a preview of the map.
-You can then use the save_fga method to write the vector field to disk in FGA format.
+You can then use the __save_fga method to write the vector field to disk in FGA format__.
 
 ### Special classes
 #### ElectricDipole2D
