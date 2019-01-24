@@ -158,13 +158,18 @@ class VectorField2D(VectorField):
     
 class Vortex2D(VectorField2D):
     
+    def __init__(self, radius=1.0, pull=0.5, size=None, resolution=None):
+        self.radius = 1/radius
+        self.pull = pull
+        super(Vortex2D, self).__init__(size, resolution)
+        
     def _set_uvw(self):
         """ Calculate vector field. """
         sq_sum = self.grid_x ** 2 + self.grid_y ** 2
         divisor = np.sqrt(sq_sum)
-        factor = np.exp(-sq_sum)
-        self.u = factor * -self.grid_y / divisor
-        self.v = factor *  self.grid_x / divisor
+        factor = np.exp(-sq_sum*self.radius)
+        self.u = factor *  self.grid_y / divisor - self.pull * self.grid_x
+        self.v = factor * -self.grid_x / divisor - self.pull * self.grid_y
         self.w = np.zeros(self.resolution)
         
 
