@@ -48,7 +48,7 @@ class VectorField(ABC):
         :return: ndarray of length 3.
         """
         arr = (np.ones(3) * 2).astype(dtype)
-        if not param:
+        if param is None:
             return arr
         else:
             try:
@@ -137,6 +137,9 @@ class VectorField2D(VectorField):
             size = 4
         if not resolution:
             resolution = [32, 32, 1]
+        # For 2D fields make sure there is only 1 slice in Z direction.
+        resolution = self._get_param_as_array(resolution)
+        resolution[2] = 1
         super(VectorField2D, self).__init__(size, resolution)
         
     def plot(self, filename=None):
