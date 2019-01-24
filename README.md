@@ -20,7 +20,18 @@ This is a class for quick prototyping and generation of 2D vectorfields.
 You provide custom functions to the constructor for creating the U and V vector components.  
 These functions must take 2 parameters that will be substituted for the class' data members grid_x and grid_y.
 
-__Example:__
+__Examples:__
+
+non-square wavy vector field 
+```python
+import numpy as np
+from vectorfields import CustomUV2D
+fu = lambda x,y: x/x  # =1. Flow in one direction.
+fv = lambda x,y: np.sin(x)
+vf = CustomUV2D(fu, fv, size=[8,2], resolution=[32,8])
+vf.plot()
+```
+some diagonal flow thingy
 ```python
 import numpy as np
 from vectorfields import *   
@@ -31,7 +42,7 @@ vf.plot()
 ```  
 
 ## History
-This little project startet at a little game jam with the topic "electricity". I wanted to do something with particles and controlling their flow with formulas, but the available methods for creating vector fields at the time where either too complicated for this small task, or too time consuming or bound to purchasing a software license. Of course, this cannot compete with GUI software like VectorayGen, but it's free and open source.
+This little project started at a little game jam with the topic "electricity". I wanted to do something with particles and controlling their flow with formulas, but the available methods for creating vector fields at the time where either too complicated for this small task, or too time consuming or bound to purchasing a software license. Of course, this cannot compete with GUI software like VectorayGen, but it's free and open source.
 
 ## Development
 Since it did what I needed it got stuck in early development stage. For example, there are no three-dimensional vector fields yet and there are no unit-tests.
