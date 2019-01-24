@@ -41,6 +41,15 @@ fv = lambda x,y: np.cos(x)
 vf = CustomUV2D(fu, fv, size=16)
 vf.plot()
 ```
+"flowers"
+```python
+import numpy as np
+from vectorfields import CustomUV2D
+fu = lambda x,y: np.sin(y + x)
+fv = lambda x,y: np.cos(x - y)
+vf = CustomUV2D(fu, fv, size=12, resolution=48)
+vf.plot()
+```
 some diagonal flow thingy
 ```python
 import numpy as np
