@@ -114,7 +114,7 @@ class VectorField(ABC):
     def plot(self, filename=None):
         """ Plot the vector field as a preview. """
         # Todo: 3D plots get messy quickly. Any way to use plotly for interactive plots wihout the Jupyter overhead?
-        pass
+        raise NotImplementedError
     
     def _plot_save_or_show(self, filename=None):
         """ Helper method to decide whether to show the plot or save it do file. """
@@ -227,3 +227,22 @@ class CustomUV2D(VectorField2D):
         self.u = self.u_func(self.grid_x, self.grid_y)
         self.v = self.v_func(self.grid_x, self.grid_y)
         self.w = np.zeros(self.resolution)
+
+
+class CustomUVW(VectorField):
+    """ Provide custom functions for creating UVW vector components.
+        These functions must take 3 parameters that will be substituted
+        for grid_x, grid_y and grid_z.
+    """
+    
+    def __init__(self, u_func, v_func, w_func, size=None, resolution=None):
+        self.u_func = u_func
+        self.v_func = v_func
+        self.w_func = w_func
+        super(CustomUVW, self).__init__(size, resolution)
+    
+    def _set_uvw(self):
+        """ Calculate vector field. """
+        self.u = self.u_func(self.grid_x, self.grid_y, self.grid_z)
+        self.v = self.v_func(self.grid_x, self.grid_y, self.grid_z)
+        self.w = self.w_func(self.grid_x, self.grid_y, self.grid_z)
