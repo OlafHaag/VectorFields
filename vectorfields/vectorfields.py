@@ -20,6 +20,7 @@
 #    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #    SOFTWARE.
 
+import os
 from abc import ABC, abstractmethod
 
 import matplotlib.pyplot as plt
@@ -121,7 +122,7 @@ class VectorField(ABC):
         return vectors
         
     def save_fga(self, filename):
-        """ Export the vector field as .FGA file (Fluid Grid ASCII) format to disk. """
+        """ Write the vector field as .FGA file (Fluid Grid ASCII) format to disk. """
         np.savetxt(filename, self.vectors, delimiter=',', newline=',\n', fmt='%3.5f')
         
         prependix = "{0},{1},{2},\n-{3},-{4},-{5},\n{3},{4},{5},".format(self.resolution[0],
@@ -138,6 +139,22 @@ class VectorField(ABC):
         except (OSError, IOError) as e:
             print("ERROR {}: Failed to save file {}. {}".format(e.errno, filename, e.strerror))
     
+    def save_vf(self, filename):
+        """ Write the vector field as .vf file format to disk. """
+        # Todo: It seems Unity3D vector fields must be cubes with same resolution for all axes.
+        raise NotImplementedError
+    
+    def save(self, filename):
+        """ Write the vector field to disk. """
+        file_name, ext = os.path.splitext(filename)
+        if ext == ".fga":
+            self.save_fga(filename)
+        elif ext == ".vf":
+            self.save_vf(filename)
+        else:
+            print("ERROR: file format '{}' is not supported."
+                  "\nSupported formats are: 'FGA'(Unreal Engine 4), 'VF'(Unity3D)".format(ext))
+        
     def plot(self, filename=None):
         """ Plot the vector field as a preview. """
         # Todo: 3D plots get messy quickly. Any way to use plotly for interactive plots wihout the Jupyter overhead?
