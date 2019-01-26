@@ -72,7 +72,7 @@ beautiful twirls
 ```python
 import numpy as np
 from vectorfields import CustomUV2D 
-fu = lambda x,y: np.cos(np.linalg.norm(np.vstack((x.flat, y.flat)), axis=0).reshape(x.shape))
+fu = lambda x,y: np.cos(np.linalg.norm(np.dstack((x, y)), axis=2))[:,:,np.newaxis]
 fv = lambda x,y: np.cos(x-y)
 vf = CustomUV2D(fu, fv, size=16)
 vf.plot()
@@ -91,7 +91,7 @@ something a little bit more complex, "translated" from [anvaka's gallery](https:
 import numpy as np
 from vectorfields import CustomUV2D 
 def fu(x,y):
-    grid_norms = np.linalg.norm(np.vstack((x.flat, y.flat)), axis=0).reshape(x.shape)
+    grid_norms = np.linalg.norm(np.dstack((x, y)), axis=2)[:,:,np.newaxis]
     return np.minimum(np.sin(np.exp(x)),np.sin(grid_norms))
     
 fv = lambda x,y: np.sin(x)
