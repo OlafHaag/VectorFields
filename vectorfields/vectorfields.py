@@ -83,10 +83,9 @@ class VectorField(ABC):
         """ Set functions for u, v, and w (xyz) vector components.
         Set self.u, self.v and self.w.
         """
-        # Todo: simple example
-        self.u = None
-        self.v = None
-        self.w = None
+        self.u = self.grid_x
+        self.v = self.grid_y
+        self.w = self.grid_z
     
     def _get_vector_table(self):
         """ This composes a 3*m matrix of all the row vectors in preparation for FGA export. """
