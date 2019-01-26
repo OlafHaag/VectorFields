@@ -30,12 +30,40 @@ import numpy as np
 class VectorField(ABC):
     """ Creates a vector field in three dimensional cartesian space. """
     def __init__(self, size=None, resolution=None):
-        self.resolution = self._get_param_as_array(resolution)
-        self.size = self._get_param_as_array(size, dtype=float)
-        self.grid_x, self.grid_y, self.grid_z = self._generate_grid()
-        self._set_uvw()
-        self.vectors = self._get_vector_table()
+        self._initialized = False
+        self.size = size
+        self.resolution = resolution
+        self._initialized = True
+        self._evaluate()
+        
+    def _evaluate(self):
+        if self._initialized:
+            self.grid_x, self.grid_y, self.grid_z = self._generate_grid()
+            self._evaluate_vectors()
+        
+    def _evaluate_vectors(self):
+        if self._initialized:
+            self._set_uvw()
+            self.vectors = self._get_vector_table()
     
+    @property
+    def size(self):
+        return self._size
+
+    @size.setter
+    def size(self, value):
+        self._size = self._get_param_as_array(value, dtype=float)
+        self._evaluate()
+
+    @property
+    def resolution(self):
+        return self._resolution
+    
+    @resolution.setter
+    def resolution(self, value):
+        self._resolution = self._get_param_as_array(value, dtype=int)
+        self._evaluate()
+
     @staticmethod
     def _get_param_as_array(param, absolute=True, dtype=int):
         """ Checks the input parameter and, if necessary, transforms it
@@ -77,7 +105,7 @@ class VectorField(ABC):
         z = np.linspace(min[2], max[2], self.resolution[2])
         x, y, z = np.meshgrid(x, y, z)
         return x, y, z
-
+        
     @abstractmethod
     def _set_uvw(self):
         """ Set functions for u, v, and w (xyz) vector components.
@@ -135,11 +163,15 @@ class VectorField2D(VectorField):
         if not size:
             size = 4
         if not resolution:
-            resolution = [32, 32, 1]
-        # For 2D fields make sure there is only 1 slice in Z direction.
-        resolution = self._get_param_as_array(resolution)
-        resolution[2] = 1
+            resolution = 32
         super(VectorField2D, self).__init__(size, resolution)
+
+    @VectorField.resolution.setter
+    def resolution(self, value):
+        self._resolution = self._get_param_as_array(value, dtype=int)
+        # For 2D fields make sure there is only 1 slice in Z direction.
+        self._resolution[2] = 1
+        self._evaluate()
         
     def plot(self, filename=None):
         """ Plot a top-down view on the XY plane of the vector field. """
@@ -158,17 +190,41 @@ class VectorField2D(VectorField):
 class Vortex2D(VectorField2D):
     
     def __init__(self, radius=1.0, pull=0.5, size=None, resolution=None):
-        self.radius = 1/radius
+        self._initialized = False
+        self.radius = radius
         self.pull = pull
         super(Vortex2D, self).__init__(size, resolution)
+
+    @property
+    def radius(self):
+        return self._radius
+
+    @radius.setter
+    def radius(self, value):
+        if value < 0:
+            print("Warning: Vortex radius should be positive.")
+        if value == 0:
+            print("Warning: Vortex radius can't be zero. Setting to 0.001.")
+            value = 0.001
+        self._radius = value
+        self._evaluate_vectors()
         
+    @property
+    def pull(self):
+        return self._pull
+
+    @pull.setter
+    def pull(self, value):
+        self._pull = value
+        self._evaluate_vectors()
+    
     def _set_uvw(self):
         """ Calculate vector field. """
         sq_sum = self.grid_x ** 2 + self.grid_y ** 2
         divisor = np.sqrt(sq_sum)
-        factor = np.exp(-sq_sum*self.radius)
-        self.u = factor *  self.grid_y / divisor - self.pull * self.grid_x
-        self.v = factor * -self.grid_x / divisor - self.pull * self.grid_y
+        factor = np.exp(-sq_sum / self._radius)
+        self.u = factor * self.grid_y / divisor - self._pull * self.grid_x
+        self.v = factor * -self.grid_x / divisor - self._pull * self.grid_y
         self.w = np.zeros(self.resolution)
         
 
