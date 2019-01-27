@@ -4,8 +4,9 @@ from .vectorfields import VectorField,\
                           Convolution2D, \
                           ElectricDipole2D, \
                           TwirlFlow2D, \
+                          Belt2D, \
                           CustomUV2D, \
                           CustomUVW
 
-__version__ = '0.2a'
+__version__ = '0.3a'
 

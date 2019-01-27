@@ -336,6 +336,56 @@ class TwirlFlow2D(VectorField2D):
         self._evaluate_vectors()
 
 
+class Belt2D(VectorField2D):
+    """ Creates rotating areas that merge together to create a stream. """
+    def __init__(self, pulleys=None, size=12, resolution=None):
+        self._initialized = False
+        if pulleys is None:
+            pulleys = ((-2.0, 1.75), (0.0, -1.75), (2., 1.75))
+        self._pulleys = list()
+        try:
+            for pulley in pulleys:
+                self.add_pulley(*pulley)
+        except TypeError:
+            raise TypeError("Argument pulleys must be an iterable of iterables!\n"
+                            "Each item must have at least an x and y coordinate\n"
+                            "and optionally a radius, thickness and speed.\n"
+                            "e.g.: [(-2., 0.), (2., -0.5, 0.75, 0.5, -1.0)]")
+        super(Belt2D, self).__init__(size, resolution)
+        
+    def add_pulley(self, x, y, radius=1.0, thickness=2.5, speed=1.0):
+        self._pulleys.append([x, y, radius, speed, thickness])
+        self._evaluate_vectors()
+    
+    def remove_pulley(self, idx):
+        try:
+            self._pulleys.pop(idx)
+        except IndexError:
+            raise IndexError("Pulley index '{}' out of range. There are {} pulleys.".format(idx, len(self._pulleys)))
+        self._evaluate_vectors()
+    
+    def _field(self, points, radius=1.0, thickness=2.5, speed=1.0):
+        d = np.linalg.norm(points, axis=2, keepdims=True) - radius
+        # Negate Y values.
+        points[:, :, 1] = -points[:, :, 1]
+        # Switch Y and X.
+        points = np.flip(points, axis=2)
+        field = points * speed * np.exp(-np.square(d)/thickness)
+        return field
+    
+    def _set_uvw(self):
+        """ Calculate vector field. """
+        grid = np.dstack((self.grid_x, self.grid_y))
+        field = np.zeros(grid.shape)
+        for pulley in self._pulleys:
+            points = grid + [-pulley[0], -pulley[1]]
+            field = np.add(field, self._field(points, pulley[2], pulley[3]))
+        
+        self.u = field[:, :, 0, np.newaxis]
+        self.v = field[:, :, 1, np.newaxis]
+        self.w = np.zeros(self.resolution)
+    
+
 class CustomUV2D(VectorField2D):
     """ Provide custom functions for creating u and v vector components.
         These functions must take 2 parameters that will be substituted for grid_x and grid_y.
