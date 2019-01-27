@@ -293,6 +293,49 @@ class ElectricDipole2D(VectorField2D):
         self.vectors = self._get_vector_table()
 
 
+class TwirlFlow2D(VectorField2D):
+    
+    def __init__(self, vert_flow=0.5, vert_freq=0.5, hori_freq=1.0, size=12, resolution=None):
+        self._initialized = False
+        self.vertical_flow = vert_flow
+        self.vertical_freq = vert_freq
+        self.horizontal_freq = hori_freq
+        super(TwirlFlow2D, self).__init__(size, resolution)
+    
+    def _set_uvw(self):
+        """ Calculate vector field. """
+        self.u = np.cos(self.horizontal_freq * self.grid_x) + np.cos(self.grid_y * 2.5)
+        self.v = np.sin(2.0 * self.grid_x) * np.cos(self.vertical_freq * self.grid_y + 1.5) - self.vertical_flow
+        self.w = np.zeros(self.resolution)
+
+    @property
+    def vertical_flow(self):
+        return self._vertical_flow
+    
+    @vertical_flow.setter
+    def vertical_flow(self, value):
+        self._vertical_flow = value
+        self._evaluate_vectors()
+
+    @property
+    def vertical_freq(self):
+        return self._vertical_freq
+
+    @vertical_freq.setter
+    def vertical_freq(self, value):
+        self._vertical_freq = value
+        self._evaluate_vectors()
+
+    @property
+    def horizontal_freq(self):
+        return self._horizontal_freq
+
+    @horizontal_freq.setter
+    def horizontal_freq(self, value):
+        self._horizontal_freq = value
+        self._evaluate_vectors()
+
+
 class CustomUV2D(VectorField2D):
     """ Provide custom functions for creating u and v vector components.
         These functions must take 2 parameters that will be substituted for grid_x and grid_y.
