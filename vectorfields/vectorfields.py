@@ -237,7 +237,7 @@ class Vortex2D(VectorField2D):
     
     def _set_uvw(self):
         """ Calculate vector field. """
-        sq_sum = self.grid_x ** 2 + self.grid_y ** 2
+        sq_sum = np.square(self.grid_x) + np.square(self.grid_y)
         divisor = np.sqrt(sq_sum)
         factor = np.exp(-sq_sum / self._radius)
         self.u = factor * self.grid_y / divisor - self._pull * self.grid_x
@@ -252,7 +252,7 @@ class Convolution2D(VectorField2D):
         
     def _set_uvw(self):
         """ Calculate vector field. """
-        term = np.exp(-(self.grid_x ** 2 + self.grid_y ** 2))
+        term = np.exp(-(np.square(self.grid_x) + np.square(self.grid_y)))
         self.u = -2 * self.grid_x * term
         self.v = -2 * self.grid_y * term
         self.w = np.zeros(self.resolution)
@@ -267,8 +267,8 @@ class ElectricDipole2D(VectorField2D):
 
     def _E(self, q, a):
         """ Calculate electric field. """
-        return q * (self.grid_x - a[0]) / ((self.grid_x - a[0]) ** 2 + (self.grid_y - a[1]) ** 2) ** 1.5, \
-               q * (self.grid_y - a[1]) / ((self.grid_x - a[0]) ** 2 + (self.grid_y - a[1]) ** 2) ** 1.5
+        return q * (self.grid_x - a[0]) / (np.square(self.grid_x - a[0]) + np.square(self.grid_y - a[1])) ** 1.5, \
+               q * (self.grid_y - a[1]) / (np.square(self.grid_x - a[0]) + np.square(self.grid_y - a[1])) ** 1.5
     
     def _set_uvw(self):
         """ Calculate vector field. """
@@ -280,13 +280,13 @@ class ElectricDipole2D(VectorField2D):
     
     def normalize(self):
         """ Normalization loses all information about field strength! """
-        self.u = self.u / np.sqrt(self.u ** 2 + self.v ** 2)
-        self.v = self.v / np.sqrt(self.u ** 2 + self.v ** 2)
+        self.u = self.u / np.sqrt(np.square(self.u) + np.square(self.v))
+        self.v = self.v / np.sqrt(np.square(self.u) + np.square(self.v))
         self.vectors = self._get_vector_table()
         
     def clamp(self, E_max=10):
         """ Clamp field strength to E_max. """
-        E = np.sqrt(self.u ** 2 + self.v ** 2)
+        E = np.sqrt(np.square(self.u) + np.square(self.v))
         k = np.where(E.flat[:] > E_max)[0]
         self.u.flat[k] = self.u.flat[k] / E.flat[k] * E_max
         self.v.flat[k] = self.v.flat[k] / E.flat[k] * E_max
