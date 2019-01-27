@@ -365,6 +365,10 @@ class Belt2D(VectorField2D):
         self._evaluate_vectors()
     
     def _field(self, points, radius=1.0, thickness=2.5, speed=1.0):
+        # Sanity checks.
+        thickness = max(thickness, 0.001)
+        radius = max(radius, 0.0)
+        
         d = np.linalg.norm(points, axis=2, keepdims=True) - radius
         # Negate Y values.
         points[:, :, 1] = -points[:, :, 1]
