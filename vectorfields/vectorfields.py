@@ -21,6 +21,7 @@
 #    SOFTWARE.
 
 import os
+import struct
 from abc import ABC, abstractmethod
 
 import matplotlib.pyplot as plt
@@ -82,7 +83,7 @@ class VectorField(ABC):
         else:
             try:
                 arr[: len(param)] = param[:3]
-            except TypeError:
+            except (TypeError, IndexError):
                 arr = np.array(param).repeat(3)
             except ValueError:
                 print("ERROR: Parameters resolution and size need to be numbers or iterables of 3 numbers.\n"
@@ -132,18 +133,35 @@ class VectorField(ABC):
                                                                          self.size[1]*0.5,
                                                                          self.size[2]*0.5)
         try:
-            with open(filename, 'r+') as f:
-                content = f.read()
-                f.seek(0, 0)
-                f.write(prependix + '\n' + content)
+            with open(filename, 'r+') as file_handle:
+                content = file_handle.read()
+                file_handle.seek(0, 0)
+                file_handle.write(prependix + '\n' + content)
         except (OSError, IOError) as e:
             print("ERROR {}: Failed to save file {}. {}".format(e.errno, filename, e.strerror))
     
     def save_vf(self, filename):
         """ Write the vector field as .vf file format to disk. """
-        # Todo: It seems Unity3D vector fields must be cubes with same resolution for all axes.
-        raise NotImplementedError
+        if not np.unique(self.resolution).size == 1:
+            raise ValueError("Vectorfield resolution must be the same for X, Y, Z when exporting to Unity3D.")
     
+        file_handle = open(filename, 'wb')
+        for val in [b'V', b'F', b'_', b'V',
+                    struct.pack('H', self.resolution[0]),
+                    struct.pack('H', self.resolution[1]),
+                    struct.pack('H', self.resolution[2])]:
+            file_handle.write(val)
+        
+        # Layout data in required order.
+        u_stream = self.u.flatten('F')
+        v_stream = self.v.flatten('F')
+        w_stream = self.w.flatten('F')
+        for i in range(u_stream.size):
+            file_handle.write(struct.pack('f', v_stream[i]))
+            file_handle.write(struct.pack('f', u_stream[i]))
+            file_handle.write(struct.pack('f', w_stream[i]))
+        file_handle.close()
+        
     def save(self, filename):
         """ Write the vector field to disk. """
         file_name, ext = os.path.splitext(filename)
@@ -189,6 +207,16 @@ class VectorField2D(VectorField):
         # For 2D fields make sure there is only 1 slice in Z direction.
         self._resolution[2] = 1
         self._evaluate()
+        
+    def to_3d(self):
+        """ Returns a 3D vector field with resolution x=y=z. """
+        res = self.resolution.max()
+        func = lambda x, y, z: np.zeros(x.shape)
+        vf3d = CustomUVW(func, func, func, size=self.size, resolution=res)
+        # Copy the values to the new vector field. Fit into new resolution and leave non-overlapping as zeros.
+        vf3d.u[:self.u.shape[0], :self.u.shape[1], :] = self.u.repeat(res, axis=2)
+        vf3d.v[:self.v.shape[0], :self.v.shape[1], :] = self.v.repeat(res, axis=2)
+        return vf3d
         
     def plot(self, filename=None):
         """ Plot a top-down view on the XY plane of the vector field. """
