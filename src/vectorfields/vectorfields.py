@@ -183,7 +183,7 @@ class VectorField(ABC):
     def plot(self, filename=None):
         """ Plot the vector field as a preview. """
         # Todo: 3D plots get messy quickly. Any way to use plotly for interactive plots wihout the Jupyter overhead?
-        raise NotImplementedError
+        raise NotImplementedError("Only implemented for 2D vector fields right now.")
     
     def _plot_save_or_show(self, filename=None):
         """ Helper method to decide whether to show the plot or save it do file. """
