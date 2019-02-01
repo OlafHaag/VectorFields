@@ -1,6 +1,15 @@
 # VectorFields
-Scripts to create vector fields that can be used in game engines like Unreal Engine 4 and Unity3D.  
+Scripts to create vector fields that can be used in game engines like Unreal Engine 4 and Unity 3D.  
 Have a look at UE4's [documentation](https://docs.unrealengine.com/en-us/Engine/Rendering/ParticleSystems/VectorFields).
+
+## Installation
+### via Python Package Index
+`pip install vectorfields`
+### Bleeding Edge
+* To install using development mode:  
+`pip install -e git+https://github.com/OlafHaag/vectorfields.git@master#egg=vectorfields`
+* To install using regular mode (building the package):  
+`pip install https://github.com/OlafHaag/vectorfields/archive/master.zip`
 
 ## Usage
 You have to know a bit of python and math.

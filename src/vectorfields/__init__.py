@@ -8,5 +8,5 @@ from .vectorfields import VectorField,\
                           CustomUV2D, \
                           CustomUVW
 
-__version__ = '0.4a'
+__version__ = '0.1.0'
 
