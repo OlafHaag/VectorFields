@@ -20,13 +20,20 @@
 #    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #    SOFTWARE.
 
+import sys
 import os
+import abc
 import struct
-from abc import ABC, abstractmethod
 
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import axes3d
+#from mpl_toolkits.mplot3d import axes3d
 import numpy as np
+
+# Compatible with Python 2 *and* 3.
+if sys.version_info >= (3, 4):
+    ABC = abc.ABC
+else:
+    ABC = abc.ABCMeta('ABC', (), {})
 
 
 class VectorField(ABC):
@@ -108,7 +115,7 @@ class VectorField(ABC):
         x, y, z = np.meshgrid(x, y, z)
         return x, y, z
         
-    @abstractmethod
+    @abc.abstractmethod
     def _set_uvw(self):
         """ Set functions for u, v, and w (xyz) vector components.
         Set self.u, self.v and self.w.
