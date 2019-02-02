@@ -1,5 +1,5 @@
 # VectorFields
-Scripts to create vector fields that can be used in game engines like Unreal Engine 4 and Unity 3D.  
+Scripts to create vector fields and flowmaps that can be used in game engines like Unreal Engine 4 and Unity 3D.  
 Have a look at UE4's [documentation](https://docs.unrealengine.com/en-us/Engine/Rendering/ParticleSystems/VectorFields).
 
 ## Installation
@@ -18,9 +18,10 @@ The abstract base classes VectorField and VectorField2D can't be instantiated.
 
 Instantiate a specific vector field, like ElectricDipole2D.  
 You can use the __*save* method to write the vector field to disk in FGA or VF format__. To be able to save in vf format, you have to turn instances of VectorField2D subclasses into 3D vector fields with the *to_3d* method. If I'm not mistaken Unity expects *cubic* vector fields with resolution x=y=z.
+You can also save instances of Vectorfield2D's sub classes to __flow maps__ (e.g. png).
 
 It's best to preview your vector field directly in engine. Saving to disk usually reloads the file in Unity.  
-For other purposes you can use the plot-method of the Vectorfield2D to get a preview.
+For other purposes you can use the plot-method of the Vectorfield2D class to get a preview.
 
 ### Special classes
 #### ElectricDipole2D

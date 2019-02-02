@@ -26,6 +26,7 @@ import abc
 import struct
 
 import matplotlib.pyplot as plt
+from matplotlib.backend_bases import FigureCanvasBase
 #from mpl_toolkits.mplot3d import axes3d
 import numpy as np
 
@@ -237,8 +238,45 @@ class VectorField2D(VectorField):
         plt.ylabel('y')
         plt.axis('image')
         self._plot_save_or_show(filename)
+        
+    def _refit(self, arr, out_range=(0, 255)):
+        """ Fit the values of the array into new range.
+            The bounds for the data will be -abs(max), +abs(max), not min and max!.
+        """
+        min_val, max_val = -np.abs(arr).max(), np.abs(arr).max()
+        y = (arr - (max_val + min_val) * 0.5) / (max_val - min_val)
+        return y * (out_range[1] - out_range[0]) + (out_range[1] + out_range[0]) * 0.5
     
+    def _get_flow_rgb(self):
+        uv = np.dstack((self.u, self.v))
+        # Convert to 0..255 for rgb values. And invert.
+        rg = np.abs(self._refit(uv).astype(int)-255)
+        # The blue channel is all zeros (unused).
+        b = np.zeros((self.resolution[0], self.resolution[1])).astype(int)
+        rgb = np.dstack((rg, b))
+        return rgb
     
+    def save_flowmap(self, filename):
+        rgb = self._get_flow_rgb()
+        try:
+            plt.imsave(filename, rgb)
+        except ValueError:
+            file_name, ext = os.path.splitext(filename)
+            print("ERROR: file format '{}' is not supported.".format(ext),
+                  "\nSupported formats are: 'FGA'(Unreal Engine 4), 'VF'(Unity3D)",
+                  "\nFlowmaps (Images): {}".format(", ".join(sorted(FigureCanvasBase.get_supported_filetypes()))))
+
+    def save(self, filename):
+        """ Write the vector field to disk. """
+        file_name, ext = os.path.splitext(filename)
+        if ext == ".fga":
+            self.save_fga(filename)
+        elif ext == ".vf":
+            self.save_vf(filename)
+        else:
+            self.save_flowmap(filename)
+            
+
 class Vortex2D(VectorField2D):
     
     def __init__(self, radius=1.0, pull=0.5, size=None, resolution=None):
@@ -439,7 +477,7 @@ class CustomUV2D(VectorField2D):
         self.u = self.u_func(self.grid_x, self.grid_y)
         self.v = self.v_func(self.grid_x, self.grid_y)
         self.w = np.zeros(self.resolution)
-
+        
 
 class CustomUVW(VectorField):
     """ Provide custom functions for creating UVW vector components.
