@@ -38,7 +38,9 @@ ElectricDipole2D has 2 special methods to either normalize the vectors and lose 
 #### Belt2D
 With this you can place rotating areas in the field that more or less merge together, hence creating the impression of a belt running over pulleys.   
 Besides their x and y coordinates each *pulley* has a radius, thickness and speed (negative speed to change direction).
-![Belt2D Example Animation](https://github.com/OlafHaag/VectorFields/raw/master/docs/img/belts.gif "Belt2D example")
+![Belt2D Example Animation](https://github.com/OlafHaag/VectorFields/raw/master/docs/img/belts.gif "Belt2D example")  
+As a flowmap:  
+![Belt2D Example Flowmap](https://github.com/OlafHaag/VectorFields/raw/master/docs/img/BeltFlow.png "Belt2D FlowMap")
 
 #### CustomUVW
 This is a class for quick prototyping and generation of vector fields.
