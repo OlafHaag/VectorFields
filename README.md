@@ -25,7 +25,7 @@ For other purposes you can use the plot-method of the Vectorfield2D class to get
 
 ### Special classes
 #### Vortex2D
-Has parameters __radius__ and __pull__.
+Has parameters __radius__ and __pull__.  
 ![Vortex2D Example Animation](https://github.com/OlafHaag/VectorFields/raw/master/docs/img/vortex.gif "Vortex2D example")
 
 #### TwirlFlow2D
