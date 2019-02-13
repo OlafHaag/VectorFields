@@ -173,9 +173,9 @@ class VectorField(ABC):
     def save(self, filename):
         """ Write the vector field to disk. """
         file_name, ext = os.path.splitext(filename)
-        if ext == ".fga":
+        if ext.lower() == ".fga":
             self.save_fga(filename)
-        elif ext == ".vf":
+        elif ext.lower() == ".vf":
             self.save_vf(filename)
         else:
             print("ERROR: file format '{}' is not supported."
@@ -269,9 +269,9 @@ class VectorField2D(VectorField):
     def save(self, filename):
         """ Write the vector field to disk. """
         file_name, ext = os.path.splitext(filename)
-        if ext == ".fga":
+        if ext.lower() == ".fga":
             self.save_fga(filename)
-        elif ext == ".vf":
+        elif ext.lower() == ".vf":
             self.save_vf(filename)
         else:
             self.save_flowmap(filename)
