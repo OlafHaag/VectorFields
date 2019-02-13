@@ -11,6 +11,14 @@ Have a look at UE4's [documentation](https://docs.unrealengine.com/en-us/Engine/
 * To install using regular mode (building the package):  
 `pip install https://github.com/OlafHaag/vectorfields/archive/master.zip`
 
+### Anaconda Warning
+To cite Ralf Gommers:
+> **please never install numpy with pip into a conda/anaconda install!**
+> This will result in all sorts of pain down the line.  
+
+So if you use the Anaconda distribution and you run into the issue `Importing the multiarray numpy extension module failed.`:
+ Use conda to install numpy beforehand or `pip uninstall numpy` and reinstall numpy with `conda install numpy` into your environment.
+
 ## Usage
 You have to know a bit of python and math.
 
