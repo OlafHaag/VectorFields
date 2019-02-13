@@ -32,7 +32,7 @@ Has parameters __radius__ and __pull__.
 ![TwirlFlow2D Example Animation](https://github.com/OlafHaag/VectorFields/raw/master/docs/img/twirlflow.gif "TwirlFlow2D example")
 
 #### ElectricDipole2D
-ElectricDipole2D has 2 special methods to either normalize the vectors and lose all information on field strength or to clamp the field strength to a maximum value. This was necessary, because the physical properties of this field aren't visually pleasing.
+ElectricDipole2D has 2 special methods to either normalize the vectors and lose all information on field strength or to clamp the field strength to a maximum value. This was necessary, because the physical properties of this field aren't visually pleasing.  
 ![ElectricDipole Example Animation](https://github.com/OlafHaag/VectorFields/raw/master/docs/img/dipole.gif "Electric Dipole example with clamped field strength")
 
 #### Belt2D
@@ -65,7 +65,6 @@ from vectorfields import CustomUV2D
 ufunc = lambda x,y: np.ones(x.shape)  # Flow in one direction.
 vfunc = lambda x,y: np.sin(x)
 vf = CustomUV2D(ufunc, vfunc, size=[8,2], resolution=[32,8])
-vf.plot()
 ```
 square example:
 ![Sine Wave Example Animation](https://github.com/OlafHaag/VectorFields/raw/master/docs/img/sine.gif "Sine wave example")
@@ -77,7 +76,6 @@ from vectorfields import CustomUV2D
 ufunc = lambda x,y: np.cos(y)
 vfunc = lambda x,y: np.cos(x)
 vf = CustomUV2D(ufunc, vfunc, size=16)
-vf.plot()
 ```
 ![Diamonds Example Animation](https://github.com/OlafHaag/VectorFields/raw/master/docs/img/diamonds.gif "diamonds example")
 
@@ -88,7 +86,6 @@ from vectorfields import CustomUV2D
 ufunc = lambda x,y: np.sin(y + x)
 vfunc = lambda x,y: np.cos(x - y)
 vf = CustomUV2D(ufunc, vfunc, size=12, resolution=48)
-vf.plot()
 ```
 ![Belt2D Example Animation](https://github.com/OlafHaag/VectorFields/raw/master/docs/img/flowers.gif "\"flowers\" example")
 
@@ -99,7 +96,6 @@ from vectorfields import CustomUV2D
 ufunc = lambda x,y: np.cos(np.sqrt(np.abs(x)))  
 vfunc = lambda x,y: np.cos(np.sqrt(np.abs(y)))  
 vf = CustomUV2D(ufunc, vfunc)
-vf.plot()
 ```  
 [anvaka's](https://github.com/anvaka/fieldplay) square flow tiles (seriously, it's hard to find names for this stuff)
 ```python
@@ -108,7 +104,6 @@ from vectorfields import CustomUV2D
 ufunc = lambda x,y: 2.0 * np.mod(np.floor(-y), 2.0) - 1.0
 vfunc = lambda x,y: 2.0 * np.mod(np.floor(-x), -2.0) + 1.0
 vf = CustomUV2D(ufunc, vfunc, size=5.9, resolution=24)
-vf.plot()
 ```
 
 beautiful twirls
@@ -118,7 +113,6 @@ from vectorfields import CustomUV2D
 ufunc = lambda x,y: np.cos(np.linalg.norm(np.dstack((x, y)), axis=2))[:,:,np.newaxis]
 vfunc = lambda x,y: np.cos(x-y)
 vf = CustomUV2D(ufunc, vfunc, size=16)
-vf.plot()
 ```
 ![Twirls Example Animation](https://github.com/OlafHaag/VectorFields/raw/master/docs/img/twirls.gif "\"beautiful twirls\" example")
 
@@ -129,7 +123,6 @@ from vectorfields import CustomUV2D
 ufunc = lambda x,y: np.sin(y)
 vfunc = lambda x,y: x
 vf = CustomUV2D(ufunc, vfunc, size=[12, 16], resolution=[24, 32])
-vf.plot()
 ```
 One last thingy...
 ```python
@@ -138,7 +131,6 @@ from vectorfields import CustomUV2D
 ufunc = lambda x,y: np.cos(y**2)
 vfunc = lambda x,y: np.cos(y*x)
 vf = CustomUV2D(ufunc, vfunc, size=[24, 16], resolution=[48,32])
-vf.plot()
 ```
 ![Thingy Example Animation](https://github.com/OlafHaag/VectorFields/raw/master/docs/img/thingy.gif "\"thingy\" example")
 
