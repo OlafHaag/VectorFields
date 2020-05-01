@@ -2,6 +2,8 @@
 Scripts to create vector fields and flowmaps that can be used in game engines like Unreal Engine 4 and Unity 3D.  
 Have a look at UE4's [documentation](https://docs.unrealengine.com/en-us/Engine/Rendering/ParticleSystems/VectorFields).
 
+[![Latest version on PyPI](https://img.shields.io/pypi/v/vectorfields.svg)](https://pypi.org/project/vectorfields)
+
 ## Installation
 ### via Python Package Index
 `pip install vectorfields`
